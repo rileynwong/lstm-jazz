@@ -47,7 +47,7 @@ def create_network(network_input, n_vocab):
 
     model = Sequential()
     model.add(LSTM(
-        256,
+        512,
         input_shape=(network_input.shape[1], network_input.shape[2]),
         return_sequences=True
         ))
