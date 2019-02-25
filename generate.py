@@ -2,7 +2,8 @@ import pickle
 import numpy
 from music21 import instrument, note, stream, chord
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM, Activation
+from keras.layers import Dense, Dropout, Activation
+from keras.layers.cudnn_recurrent import CuDNNLSTM
 
 def generate():
     """ Generate a piano midi file """
@@ -46,15 +47,15 @@ def create_network(network_input, n_vocab):
     print('Creating network...')
 
     model = Sequential()
-    model.add(LSTM(
+    model.add(CuDNNLSTM(
         512,
         input_shape=(network_input.shape[1], network_input.shape[2]),
         return_sequences=True
         ))
     model.add(Dropout(0.3)) # Fraction of input units to be dropped during training
-    model.add(LSTM(512, return_sequences=True))
+    model.add(CuDNNLSTM(512, return_sequences=True))
     model.add(Dropout(0.3))
-    model.add(LSTM(256))
+    model.add(CuDNNLSTM(256))
     model.add(Dense(256))
     model.add(Dropout(0.3))
     model.add(Dense(n_vocab)) # Number of possible outputs
@@ -63,7 +64,7 @@ def create_network(network_input, n_vocab):
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
     # Load trained weights
-    model.load_weights('weights.hdf5')
+    model.load_weights('ff_weights.hdf5')
 
     return model
 
@@ -105,7 +106,7 @@ def create_midi(prediction_output):
     offset = 0
     output_notes = []
     # Possible extension: multiple/different instruments!
-    stored_instrument = instrument.Piano()
+    stored_instrument = instrument.Saxophone()
 
     # Create Note and Chord objects
     for pattern in prediction_output:
@@ -132,7 +133,7 @@ def create_midi(prediction_output):
         offset += 0.5
 
     midi_stream = stream.Stream(output_notes)
-    midi_stream.write('midi', fp='test_output.mid')
+    midi_stream.write('midi', fp='output_song.mid')
 
 
 if __name__ == '__main__':

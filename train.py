@@ -5,7 +5,8 @@ import numpy as np
 from music21 import converter, instrument, note, chord
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, LSTM, Activation
+from keras.layers import Dense, Dropout, Activation
+from keras.layers.cudnn_recurrent import CuDNNLSTM
 from keras.utils import np_utils
 from keras.callbacks import ModelCheckpoint
 
@@ -96,15 +97,15 @@ def create_network(network_input, n_vocab):
 
     model = Sequential()
 
-    model.add(LSTM(
+    model.add(CuDNNLSTM(
         512,
         input_shape=(network_input.shape[1], network_input.shape[2]),
         return_sequences=True
         ))
     model.add(Dropout(0.3)) # Fraction of input units to be dropped during training
-    model.add(LSTM(512, return_sequences=True))
+    model.add(CuDNNLSTM(512, return_sequences=True))
     model.add(Dropout(0.3))
-    model.add(LSTM(256))
+    model.add(CuDNNLSTM(256))
     model.add(Dense(256))
     model.add(Dropout(0.3))
     model.add(Dense(n_vocab)) # Number of possible outputs
