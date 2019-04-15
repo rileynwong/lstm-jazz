@@ -1,5 +1,5 @@
 # lstm-jazz
-Generate jazz music using an LSTM neural network.
+Generate jazz music using an LSTM neural network. [See accompanying blog post.](https://www.rileynwong.com/blog/2019/2/25/generating-music-with-an-lstm-neural-network)
 
 ### Setup
 ```
